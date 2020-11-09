@@ -12,8 +12,10 @@ router.get("/users",authenticateUser,asyncHandler( async(req,res,next)=>{
         const authUser = req.currentUser; //current user
         res.status(200)
         .json({message:"Authorized Successful!",
-            username:authUser.emailAddress,
-            name:authUser.firstName});
+                id: authUser.id,
+                firstName: authUser.firstName,
+                lastName: authUser.lastName,
+                emailAddress: authUser.emailAddress});
     }catch(err){
         next(err);
     }

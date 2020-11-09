@@ -10,7 +10,9 @@ module.exports.authenticateUser = async (req,res,next) => {
     let errorMessage; // initial the errors array.
 
     if(credentials){ // if auth() contains pass and name property
-        const theUser = await User.findOne({where:{emailAddress:credentials.name}}); //find the authenticate user
+        const theUser = await User.findOne({
+            where:{emailAddress:credentials.name}
+        }); //find the authenticate user
 
         if(theUser){ // if the user exist
             const authenticated = bcrypt.compareSync(credentials.pass,theUser.password);//compare the plain text password and encrypt password

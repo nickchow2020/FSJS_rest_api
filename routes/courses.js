@@ -12,8 +12,10 @@ router.get("/courses",asyncHandler(async (req,res,next)=>{
         const allCourses = await Course.findAll({
             include:[{
                 model: User,
-                as:"authenticateUser"
-            }]
+                as:"authenticateUser",
+                attributes: ["id","firstName","lastName","emailAddress"]
+            }],
+            attributes:["id","title","description","estimatedTime","materialsNeeded"]
         });
     
         res.status(200).json({allCourses})
@@ -28,10 +30,12 @@ router.get("/courses/:id",asyncHandler(async (req,res,next)=>{
         //get certain course with it's associate user detail
         const id = req.params.id;
         const course = await Course.findAll({
+            attributes:["id","title","description","estimatedTime","materialsNeeded"],
             where:{id},
             include:[{
                 model:User,
-                as:"authenticateUser"
+                as:"authenticateUser",
+                attributes: ["id","firstName","lastName","emailAddress"]
             }]
         });
         res.status(200).json({course});
@@ -45,7 +49,11 @@ router.post("/courses",authenticateUser,asyncHandler(async (req,res,next)=>{
     try{
         // add new course
         const newCourse = await Course.create(req.body);
-        res.status(201).end().redirect("/");
+        //get new course id 
+        const newCourseJson = newCourse.get({plain:true});
+        const id = newCourseJson.id;
+        //set header location to current course
+        res.status(201).location(`/course/${id}`).end();
     }catch(err){
         //handler SequelizeValidationError
         if(err.name === "SequelizeValidationError"){

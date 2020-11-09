@@ -26,7 +26,7 @@ router.get("/users",authenticateUser,asyncHandler( async(req,res,next)=>{
 router.post("/users",asyncHandler(async (req,res,next)=>{
     try{
         const newUser = await User.create(req.body); //new user data
-        res.status(201).end().redirect("/")
+        res.status(201).location("/").end();
     }catch(err){
         //http status to 400 when deal with SequelizeValidationError
         if(err.name === "SequelizeValidationError"){

@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
   };
+
+  //model initial
   Course.init({
     id: {
       type:DataTypes.INTEGER,

@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
   };
+
+  //model initial
   User.init({
     id: {
       type:DataTypes.INTEGER,

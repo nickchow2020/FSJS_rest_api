@@ -36,9 +36,12 @@ app.get('/', (req, res) => {
 //database connect test 
 (async ()=>{
   try{
+    //testing connection 
     await sequelize.authenticate();
+    //log out the database connecting successful message
     console.log("Database Connected!")
   }catch(err){
+    //log out the database connecting failed
     console.error('Unable to connect to the database:', err);
   }
 })();
@@ -56,6 +59,7 @@ app.use((err, req, res, next) => {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
 
+  //convert all error message into array
   const errors = err.errors.map(data => data.message);
 
   res.status(err.status || 500).json({

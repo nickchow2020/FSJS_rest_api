@@ -54,29 +54,35 @@ router.post("/courses",authenticateUser,asyncHandler(async (req,res,next)=>{
 
 router.put("/courses/:id",authenticateUser,asyncHandler(async (req,res,next)=>{
     try{
-        const updateDate = req.body;
-        let errors = [];
-        if(!updateDate.title){
-            errors.push("Please provide a title property value")
-        }
+        const currentUser = req.currentUser; 
+        const id = req.params.id;
+        const updateCourse = await Course.findByPk(id);
 
-        if(!updateDate.description){
-            errors.push("Please provide a description value")
-        }
-
-        if(errors.length > 0){
-            res.status(400).json({message:errors})
+        if(currentUser.id === updateCourse.userId){
+            const updateDate = req.body;
+            let errors = [];
+            if(!updateDate.title){
+                errors.push("Please provide a title property value")
+            };
+    
+            if(!updateDate.description){
+                errors.push("Please provide a description value")
+            };
+    
+            if(errors.length > 0){
+                res.status(400).json({message:errors})
+            }else{
+                updateCourse.update(req.body);
+                res.status(204).end();
+            };
         }else{
-            const id = req.params.id;
-            const updateCourse = await Course.findByPk(id);
-            updateCourse.update(req.body);
-            res.status(204).end();
-        };
+            res.status(403).json({message: `unauthorized to update username: ${currentUser.emailAddress}`})
+        }
 
     }catch(err){
         if(err.name === "SequelizeValidationError"){
             err.status = 400;
-        }
+        };
         next(err);
     }
 }))
@@ -84,10 +90,17 @@ router.put("/courses/:id",authenticateUser,asyncHandler(async (req,res,next)=>{
 
 router.delete("/courses/:id",authenticateUser,asyncHandler(async (req,res,next)=>{
     try{
+        const currentUser = req.currentUser; 
         const id = req.params.id;
         const deleteCourse = await Course.findByPk(id);
-        deleteCourse.destroy();
-        res.status(204).end();
+
+        if(currentUser.id === deleteCourse.userId){
+            deleteCourse.destroy();
+            res.status(204).end();
+        }else{
+            res.status(403).json({message: `unauthorized to delete username: ${currentUser.emailAddress}`})
+        }
+
     }catch(err){
         next(err);
     }
